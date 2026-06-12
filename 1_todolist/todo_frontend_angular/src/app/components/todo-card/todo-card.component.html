@@ -1,0 +1,61 @@
+<article
+  class="note"
+  [class]="'note note-' + todo.noteColor"
+  [class.completed]="todo.completed"
+  [style.--rot]="rotation"
+  (click)="onEdit()"
+>
+  <!-- Push Pin -->
+  <div class="pin">
+    <div class="pin-head"></div>
+    <div class="pin-shaft"></div>
+  </div>
+
+  <!-- Delete button -->
+  <button class="delete-btn" (click)="onDelete($event)" aria-label="Delete note" title="Delete">
+    <svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="1" y1="1" x2="8" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="8" y1="1" x2="1" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- Priority stripe -->
+  <div class="priority-stripe" [class]="'priority-' + todo.priority.toLowerCase()"></div>
+
+  <!-- Note body -->
+  <div class="note-body">
+    <p class="note-title">{{ todo.title }}</p>
+    @if (todo.description) {
+      <p class="note-desc">{{ todo.description }}</p>
+    }
+  </div>
+
+  <!-- Done stamp -->
+  @if (todo.completed) {
+    <div class="done-stamp">DONE</div>
+  }
+
+  <!-- Footer -->
+  <footer class="note-footer">
+    <span class="note-date">{{ todo.createdAt | timeAgo }}</span>
+
+    <button
+      class="check-btn"
+      [class.checked]="todo.completed"
+      [class]="'check-btn priority-check-' + todo.priority.toLowerCase()"
+      (click)="onToggle($event)"
+      [attr.aria-label]="todo.completed ? 'Mark incomplete' : 'Mark done'"
+    >
+      @if (todo.completed) {
+        <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+          <path d="M1 4.5L4 7.5L10 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      }
+    </button>
+  </footer>
+
+  <!-- Priority badge -->
+  <div class="priority-badge" [class]="'badge-' + todo.priority.toLowerCase()">
+    {{ priorityLabel }}
+  </div>
+</article>

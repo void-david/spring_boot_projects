@@ -1,0 +1,107 @@
+<div class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-paper" [class]="'paper-' + noteColor" role="dialog" aria-modal="true">
+
+    <!-- Header (notebook spine / label) -->
+    <div class="modal-header">
+      <div class="header-rings">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+      </div>
+      <h2 class="modal-title">{{ isEditing ? 'Edit Note' : 'New Note' }}</h2>
+      <button class="close-btn" (click)="cancel.emit()" aria-label="Close">✕</button>
+    </div>
+
+    <!-- User portrait in corner -->
+    <div class="author-strip">
+      <img src="https://i.pravatar.cc/32?img=12" alt="" class="author-avatar" />
+      <span class="author-name">David</span>
+      <span class="author-date">{{ isEditing ? 'editing' : 'new note' }}</span>
+    </div>
+
+    <!-- Form on lined paper -->
+    <form class="modal-form" (ngSubmit)="onSubmit()" #f="ngForm">
+
+      <!-- Title field -->
+      <div class="field-group">
+        <label class="field-label" for="note-title">Title</label>
+        <input
+          id="note-title"
+          class="field-input"
+          type="text"
+          [(ngModel)]="title"
+          name="title"
+          placeholder="What do you need to do?"
+          maxlength="100"
+          required
+          autocomplete="off"
+          autofocus
+        />
+        <div class="char-count">{{ title.length }}/100</div>
+      </div>
+
+      <!-- Description field -->
+      <div class="field-group">
+        <label class="field-label" for="note-desc">Notes</label>
+        <textarea
+          id="note-desc"
+          class="field-textarea"
+          [(ngModel)]="description"
+          name="description"
+          placeholder="Add details…"
+          maxlength="255"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <!-- Priority -->
+      <div class="field-group">
+        <label class="field-label">Priority</label>
+        <div class="priority-seg">
+          @for (p of priorities; track p) {
+            <button
+              type="button"
+              class="priority-btn"
+              [class.active]="priority === p"
+              [class]="'priority-btn priority-opt-' + p.toLowerCase() + (priority === p ? ' active' : '')"
+              (click)="priority = p"
+            >{{ p.charAt(0) + p.slice(1).toLowerCase() }}</button>
+          }
+        </div>
+      </div>
+
+      <!-- Color picker -->
+      <div class="field-group">
+        <label class="field-label">Color</label>
+        <div class="color-picker">
+          @for (c of colors; track c.value) {
+            <button
+              type="button"
+              class="color-swatch"
+              [class]="'swatch-' + c.value"
+              [class.selected]="noteColor === c.value"
+              (click)="noteColor = c.value"
+              [attr.aria-label]="c.label"
+              [title]="c.label"
+            >
+              @if (noteColor === c.value) {
+                <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                  <path d="M1 5L4.5 8.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="cancel.emit()">Cancel</button>
+        <button type="submit" class="btn-save" [disabled]="!title.trim()">
+          {{ isEditing ? 'Update' : 'Pin It' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

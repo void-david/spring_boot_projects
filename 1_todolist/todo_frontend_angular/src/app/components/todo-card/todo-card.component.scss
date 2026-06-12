@@ -1,0 +1,255 @@
+/* ─── Base Note ─── */
+.note {
+  position: relative;
+  border-radius: 2px;
+  padding: 20px 14px 12px;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s ease;
+  cursor: pointer;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    1px 2px 0 rgba(0,0,0,0.08),
+    3px 5px 10px rgba(0,0,0,0.28),
+    0 0 0 1px rgba(0,0,0,0.07);
+  overflow: visible;
+  user-select: none;
+
+  &:hover {
+    transform: rotate(0deg) scale(1.05) translateY(-4px);
+    box-shadow:
+      0 12px 28px rgba(0,0,0,0.38),
+      0 0 0 1px rgba(0,0,0,0.1);
+    z-index: 50;
+  }
+
+  &:active {
+    transform: rotate(0deg) scale(1.02) translateY(-2px);
+  }
+}
+
+/* ─── Color Variants ─── */
+.note-yellow {
+  background: linear-gradient(160deg, #fffde7 0%, #fff9c4 60%, #fff3a0 100%);
+  &:hover { background: linear-gradient(160deg, #ffffe9 0%, #fffbc8 100%); }
+}
+.note-blue {
+  background: linear-gradient(160deg, #eff6ff 0%, #dbeafe 60%, #bfdbfe 100%);
+  &:hover { background: linear-gradient(160deg, #f0f8ff 0%, #deeeff 100%); }
+}
+.note-pink {
+  background: linear-gradient(160deg, #fff1f2 0%, #ffe4e6 60%, #fecdd3 100%);
+  &:hover { background: linear-gradient(160deg, #fff3f4 0%, #ffe8ea 100%); }
+}
+.note-green {
+  background: linear-gradient(160deg, #f0fdf4 0%, #dcfce7 60%, #bbf7d0 100%);
+  &:hover { background: linear-gradient(160deg, #f2fdf5 0%, #dffce9 100%); }
+}
+
+/* ─── Completed state ─── */
+.note.completed {
+  opacity: 0.72;
+  filter: saturate(0.55) sepia(0.15);
+
+  .note-title {
+    text-decoration: line-through;
+    opacity: 0.65;
+  }
+  .note-desc { opacity: 0.5; }
+}
+
+/* ─── Push Pin ─── */
+.pin {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+.pin-head {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #ff8a80, #c62828);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,0.5),
+    inset 0 1px 2px rgba(255,255,255,0.35);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    width: 5px;
+    height: 5px;
+    background: rgba(255,255,255,0.38);
+    border-radius: 50%;
+  }
+}
+
+.pin-shaft {
+  width: 2px;
+  height: 8px;
+  background: linear-gradient(to bottom, #888, #bbb);
+  border-radius: 0 0 1px 1px;
+  margin-top: -1px;
+}
+
+/* ─── Delete button ─── */
+.delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 18px;
+  height: 18px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+  z-index: 10;
+
+  &:hover {
+    background: rgba(200,30,30,0.15);
+    color: #c0392b;
+  }
+}
+
+.note:hover .delete-btn { opacity: 1; }
+
+/* ─── Priority Stripe ─── */
+.priority-stripe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 2px 0 0 2px;
+
+  &.priority-low    { background: linear-gradient(to bottom, #16a34a, #15803d); }
+  &.priority-medium { background: linear-gradient(to bottom, #d97706, #b45309); }
+  &.priority-high   { background: linear-gradient(to bottom, #dc2626, #991b1b); }
+}
+
+/* ─── Note Body ─── */
+.note-body {
+  flex: 1;
+  padding-left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.note-title {
+  font-family: var(--font-note);
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d1a06;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.note-desc {
+  font-family: var(--font-note);
+  font-size: 14px;
+  color: #5a3e10;
+  line-height: 1.4;
+  word-break: break-word;
+  flex: 1;
+}
+
+/* ─── DONE Stamp ─── */
+.done-stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-14deg);
+  font-family: 'Courier New', monospace;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: rgba(0, 128, 0, 0.28);
+  border: 3px solid rgba(0, 128, 0, 0.22);
+  border-radius: 4px;
+  padding: 1px 6px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ─── Footer ─── */
+.note-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-left: 6px;
+}
+
+.note-date {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  color: rgba(0,0,0,0.35);
+  letter-spacing: 0.2px;
+}
+
+/* ─── Check button (iOS 4 style toggle) ─── */
+.check-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #e8e8e8, #c8c8c8);
+  border: 1px solid #a0a0a0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 2px 3px rgba(0,0,0,0.15),
+    0 1px 0 rgba(255,255,255,0.8);
+  color: transparent;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: linear-gradient(to bottom, #e0e0e0, #c0c0c0);
+    transform: scale(1.1);
+  }
+
+  &.checked {
+    border-color: transparent;
+    box-shadow:
+      inset 0 2px 3px rgba(0,0,0,0.2),
+      0 1px 0 rgba(255,255,255,0.5);
+    color: #fff;
+  }
+
+  &.priority-check-low.checked    { background: linear-gradient(to bottom, #4ade80, #16a34a); }
+  &.priority-check-medium.checked { background: linear-gradient(to bottom, #fbbf24, #d97706); }
+  &.priority-check-high.checked   { background: linear-gradient(to bottom, #f87171, #dc2626); }
+}
+
+/* ─── Priority badge ─── */
+.priority-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 12px;
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+
+  &.badge-low    { background: rgba(22,163,74,0.12);  color: #15803d; }
+  &.badge-medium { background: rgba(217,119,6,0.12);  color: #b45309; }
+  &.badge-high   { background: rgba(220,38,38,0.12);  color: #991b1b; }
+}

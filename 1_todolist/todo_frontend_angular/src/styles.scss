@@ -1,0 +1,78 @@
+/* =====================================================
+   PinBoard — Global Styles
+   iPhone 4 / Early Instagram skeuomorphic aesthetic
+   ===================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  /* Cork board palette */
+  --cork-light:      #D4A86A;
+  --cork-mid:        #B8864E;
+  --cork-dark:       #8B6332;
+
+  /* Note colors */
+  --note-yellow-bg:  #FEFCE8;
+  --note-yellow-b:   #FEF08A;
+  --note-blue-bg:    #EFF6FF;
+  --note-blue-b:     #BFDBFE;
+  --note-pink-bg:    #FFF1F2;
+  --note-pink-b:     #FECDD3;
+  --note-green-bg:   #F0FDF4;
+  --note-green-b:    #BBF7D0;
+
+  /* iOS 4 chrome */
+  --ios-nav-h:       44px;
+
+  /* Priority colors */
+  --priority-low:    #22c55e;
+  --priority-medium: #f59e0b;
+  --priority-high:   #ef4444;
+
+  /* Typography */
+  --font-ui:         'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-note:       'Caveat', cursive;
+  --font-title-app:  'Permanent Marker', cursive;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-ui);
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--cork-mid);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.3); border-radius: 3px; }
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* Global vintage vignette overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+  z-index: 9998;
+}

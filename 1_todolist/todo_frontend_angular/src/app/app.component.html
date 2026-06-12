@@ -1,0 +1,106 @@
+<div class="app-wrapper">
+
+  <!-- ── iOS 4-style Navigation Bar ── -->
+  <header class="ios-navbar">
+    <div class="navbar-shine"></div>
+    <div class="navbar-inner">
+
+      <div class="nav-avatar">
+        <div class="avatar-frame">
+          <img
+            src="https://i.pravatar.cc/80?img=12"
+            alt="Profile"
+            class="avatar-img"
+          />
+        </div>
+      </div>
+
+      <div class="nav-center">
+        <span class="app-logo">PinBoard</span>
+        <span class="app-sub">your notes, your life</span>
+      </div>
+
+      <div class="nav-badge" [class.has-items]="activeCount() > 0">
+        <span class="badge-count">{{ activeCount() }}</span>
+        <span class="badge-label">active</span>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ── Error Banner ── -->
+  @if (errorMsg()) {
+    <div class="error-banner" (click)="dismissError()">
+      <span class="error-icon">!</span>
+      <span>{{ errorMsg() }}</span>
+      <span class="dismiss">✕</span>
+    </div>
+  }
+
+  <!-- ── Segmented Filter Control ── -->
+  <div class="filter-strip">
+    <div class="segmented-control">
+      <button
+        class="seg-btn"
+        [class.active]="filter() === 'all'"
+        (click)="setFilter('all')"
+      >All&nbsp;<span class="seg-count">{{ todos().length }}</span></button>
+      <button
+        class="seg-btn"
+        [class.active]="filter() === 'active'"
+        (click)="setFilter('active')"
+      >Active&nbsp;<span class="seg-count">{{ activeCount() }}</span></button>
+      <button
+        class="seg-btn"
+        [class.active]="filter() === 'done'"
+        (click)="setFilter('done')"
+      >Done&nbsp;<span class="seg-count">{{ doneCount() }}</span></button>
+    </div>
+  </div>
+
+  <!-- ── Cork Board ── -->
+  <main class="cork-board">
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading notes…</p>
+      </div>
+    } @else {
+      <div class="notes-grid">
+        @for (todo of filteredTodos(); track todo.id) {
+          <app-todo-card
+            [todo]="todo"
+            (toggleComplete)="onToggleComplete($event)"
+            (editTodo)="openModal($event)"
+            (deleteTodo)="onDeleteTodo($event)"
+          />
+        } @empty {
+          <div class="empty-state">
+            <div class="empty-pin"></div>
+            <div class="empty-note">
+              <p class="empty-title">Nothing pinned yet</p>
+              <p class="empty-hint">Tap the&nbsp;<strong>+</strong>&nbsp;button below to add your first note.</p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </main>
+
+  <!-- ── Floating Add Button ── -->
+  <button class="fab-add" (click)="openModal()" aria-label="Add note">
+    <span class="fab-icon">+</span>
+  </button>
+
+  <!-- ── Modal ── -->
+  @if (showModal()) {
+    <app-todo-form-modal
+      [todo]="editingTodo()"
+      (save)="onSaveTodo($event)"
+      (cancel)="closeModal()"
+    />
+  }
+
+</div>
