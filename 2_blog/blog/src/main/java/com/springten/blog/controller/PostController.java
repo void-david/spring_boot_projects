@@ -1,13 +1,14 @@
 package com.springten.blog.controller;
 
-import com.springten.blog.model.Post;
+import com.springten.blog.dto.request.PostRequest;
+import com.springten.blog.dto.response.PostResponse;
+import com.springten.blog.dto.response.PostSummaryResponse;
 import com.springten.blog.service.PostService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -19,7 +20,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Post>> getAllPosts(
+    public ResponseEntity<Page<PostSummaryResponse>> getAllPosts(
         @RequestParam(defaultValue = "0") int page, 
         @RequestParam(defaultValue = "10") int size){
         
@@ -27,14 +28,14 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long id){
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long id){
         return postService.getPostById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<Page<Post>> getPostsByCategory(
+    public ResponseEntity<Page<PostSummaryResponse>> getPostsByCategory(
         @PathVariable Long categoryId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size){
@@ -43,7 +44,7 @@ public class PostController {
     }
 
     @GetMapping("/tag/{tagId}")
-    public ResponseEntity<Page<Post>> getPostsbyTag(
+    public ResponseEntity<Page<PostSummaryResponse>> getPostsbyTag(
         @PathVariable Long tagId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size){
@@ -52,27 +53,18 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(
-        @RequestParam Long categoryId,
-        @RequestParam(required = false) List<Long> tagIds,
-        @Valid @RequestBody Post post){
-
-        return postService.createPost(categoryId, tagIds, post)
+    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest request) {
+        return postService.createPost(request)
                 .map(p -> ResponseEntity.status(HttpStatus.CREATED).body(p))
                 .orElse(ResponseEntity.notFound().build());
-        
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(
-        @PathVariable Long id, 
-        @RequestParam Long categoryId,
-        @RequestParam(required = false, defaultValue = "[]") List<Long> tagIds,
-        @Valid @RequestBody Post post){
-
-        return postService.updatePost(id, categoryId, tagIds, post)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id,
+                                                    @Valid @RequestBody PostRequest request) {
+        return postService.updatePost(id, request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

@@ -1,15 +1,15 @@
 package com.springten.blog.controller;
 
 
-import com.springten.blog.model.Comment;
+
+import com.springten.blog.dto.request.CommentRequest;
+import com.springten.blog.dto.response.CommentResponse;
 import com.springten.blog.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -22,15 +22,15 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable Long postId){
+    public ResponseEntity<List<CommentResponse>> getCommentsByPost(@PathVariable Long postId){
         return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
     }
 
     @PostMapping
-    public ResponseEntity<Comment> createComment(@PathVariable Long postId, @Valid @RequestBody Comment comment){
-        return commentService.createComment(postId, comment)
+    public ResponseEntity<CommentResponse> createComment(@PathVariable Long postId, @Valid @RequestBody CommentRequest request){
+        return commentService.createComment(postId, request)
             .map(c -> ResponseEntity.status(HttpStatus.CREATED).body(c))
-            .orElse(ResponseEntity.noContent().build());
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{commentId}")

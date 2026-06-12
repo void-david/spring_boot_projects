@@ -1,5 +1,10 @@
 package com.springten.blog.service;
 
+import com.springten.blog.dto.request.PostRequest;
+import com.springten.blog.dto.response.CategoryResponse;
+import com.springten.blog.dto.response.CommentResponse;
+import com.springten.blog.dto.response.PostResponse;
+import com.springten.blog.dto.response.PostSummaryResponse;
 import com.springten.blog.model.Post;
 import com.springten.blog.repository.CategoryRepository;
 import com.springten.blog.repository.PostRepository;
@@ -26,40 +31,72 @@ public class PostService {
         this.tagRepository = tagRepository;
     }
 
-    public Page<Post> getAllPosts(int page, int size) {
+
+    private PostResponse toPostResponse(Post post){
+        CategoryResponse categoryResponse = post.getCategory() != null
+            ? new CategoryResponse(post.getCategory().getId(), post.getCategory().getName())
+            : null;
+
+        List<CommentResponse> commentResponses = post.getComments() != null
+            ? post.getComments().stream()
+                .map(c -> new CommentResponse(c.getId(), c.getAuthor(), c.getContent(), c.getCreatedAt()))
+                .toList()
+            : List.of();
+
+        return new PostResponse(post.getId(), post.getTitle(), post.getContent(), categoryResponse, commentResponses, post.getCreatedAt(), post.getUpdatedAt());
+    }
+
+    private PostSummaryResponse toPostSummaryResponse(Post post){
+        CategoryResponse categoryResponse = post.getCategory() != null
+            ? new CategoryResponse(post.getCategory().getId(), post.getCategory().getName())
+            : null;
+
+        return new PostSummaryResponse(post.getId(), post.getTitle(), categoryResponse, post.getCreatedAt());
+    }
+
+
+    public Page<PostSummaryResponse> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return postRepository.findAll(pageable);
+        return postRepository.findAll(pageable).map(this::toPostSummaryResponse);
     }
 
-    public Optional<Post> getPostById(Long id) {
-        return postRepository.findById(id);
+    public Optional<PostResponse> getPostById(Long id) {
+        return postRepository.findById(id).map(this::toPostResponse);
     }
 
-    public Page<Post> getPostsByCategory(Long categoryId, int page, int size) {
+    public Page<PostSummaryResponse> getPostsByCategory(Long categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return postRepository.findByCategoryId(categoryId, pageable);
+        return postRepository.findByCategoryId(categoryId, pageable).map(this::toPostSummaryResponse);
     }
 
-     public Page<Post> getPostsByTag(Long tagId, int page, int size) {
+     public Page<PostSummaryResponse> getPostsByTag(Long tagId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return postRepository.findByTagsId(tagId, pageable);
+        return postRepository.findByTagsId(tagId, pageable).map(this::toPostSummaryResponse);
     }
 
-    public Optional<Post> createPost(Long categoryId, List<Long> tagIds, Post post) {
-        return categoryRepository.findById(categoryId).map(category -> {
+    public Optional<PostResponse> createPost(PostRequest request) {
+        return categoryRepository.findById(request.getCategoryId()).map(category -> {
+            Post post = new Post();
+            post.setTitle(request.getTitle());
+            post.setContent(request.getContent());
             post.setCategory(category);
-            post.setTags(tagIds!= null ? tagRepository.findAllById(tagIds) : List.of());
-            return postRepository.save(post);
+            post.setTags(request.getTagIds() != null
+                ? tagRepository.findAllById(request.getTagIds())
+                : List.of());
+            return toPostResponse(postRepository.save(post));
         });
     }
 
-    public Optional<Post> updatePost(Long id, Long categoryId, List<Long> tagIds, Post updated) {
+    public Optional<PostResponse> updatePost(Long id, PostRequest request) {
         return postRepository.findById(id).map(existing -> {
-            existing.setTitle(updated.getTitle());
-            existing.setContent(updated.getContent());
-            categoryRepository.findById(categoryId).ifPresent(existing::setCategory);
-            existing.setTags(tagIds != null ? tagRepository.findAllById(tagIds) : List.of());
-            return postRepository.save(existing);
+            existing.setTitle(request.getTitle());
+            existing.setContent(request.getContent());
+            categoryRepository.findById(request.getCategoryId())
+                .ifPresent(existing::setCategory);
+            existing.setTags(request.getTagIds() != null
+                ? tagRepository.findAllById(request.getTagIds())
+                : List.of());
+            return toPostResponse(postRepository.save(existing));
         });
     }
 

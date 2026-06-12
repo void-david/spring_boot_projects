@@ -1,6 +1,7 @@
 package com.springten.blog.service;
 
-
+import com.springten.blog.dto.request.CategoryRequest;
+import com.springten.blog.dto.response.CategoryResponse;
 import com.springten.blog.model.Category;
 import com.springten.blog.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -15,22 +16,30 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    private CategoryResponse toCategoryResponse(Category category){
+        return new CategoryResponse(category.getId(), category.getName());
     }
 
-    public Optional<Category> getCategoryById(Long id) {
-        return categoryRepository.findById(id);
+    public List<CategoryResponse> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(this::toCategoryResponse)
+                .toList();
     }
 
-    public Category createCategory(Category category) {
-        return categoryRepository.save(category);
+    public Optional<CategoryResponse> getCategoryById(Long id) {
+        return categoryRepository.findById(id).map(this::toCategoryResponse);
     }
 
-    public Optional<Category> updateCategory(Long id, Category updated) {
+    public CategoryResponse createCategory(CategoryRequest request) {
+        Category category = new Category();
+        category.setName(request.getName());
+        return toCategoryResponse(categoryRepository.save(category));
+    }
+
+    public Optional<CategoryResponse> updateCategory(Long id, CategoryRequest request) {
         return categoryRepository.findById(id).map(existing -> {
-            existing.setName(updated.getName());
-            return categoryRepository.save(existing);
+            existing.setName(request.getName());
+            return toCategoryResponse(categoryRepository.save(existing));
         });
     }
 
