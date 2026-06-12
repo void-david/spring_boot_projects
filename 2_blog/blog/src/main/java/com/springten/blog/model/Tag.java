@@ -17,6 +17,9 @@ public class Tag {
     @Column(unique = true, nullable = false)
     private String name;
 
+    @Column(length = 7)
+    private String color;
+
     @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
     private List<Post> posts;
 
@@ -24,10 +27,11 @@ public class Tag {
 
     public Long getId() { return id; }
     public String getName() { return name; }
+    public String getColor() { return color; }
     public List<Post> getPosts() { return posts; }
 
     public void setId(Long id) { this.id = id; }
     public void setName(String name) { this.name = name; }
+    public void setColor(String color) { this.color = color; }
     public void setPosts(List<Post> posts) { this.posts = posts; }
-    
 }

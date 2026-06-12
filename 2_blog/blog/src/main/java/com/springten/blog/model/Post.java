@@ -29,6 +29,31 @@ public class Post {
 
     private LocalDateTime updatedAt;
 
+    @Column(unique = true, length = 300)
+    private String slug;
+
+    @Column(columnDefinition = "TEXT")
+    private String excerpt;
+
+    private String coverImageUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PostStatus status = PostStatus.PUBLISHED;
+
+    @Column(nullable = false)
+    private int viewCount = 0;
+
+    @Column(nullable = false)
+    private int likeCount = 0;
+
+    @Column(nullable = false)
+    private boolean featured = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -57,6 +82,14 @@ public class Post {
     public String getContent() { return content; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public String getSlug() { return slug; }
+    public String getExcerpt() { return excerpt; }
+    public String getCoverImageUrl() { return coverImageUrl; }
+    public PostStatus getStatus() { return status; }
+    public int getViewCount() { return viewCount; }
+    public int getLikeCount() { return likeCount; }
+    public boolean isFeatured() { return featured; }
+    public User getAuthor() { return author; }
     public Category getCategory() { return category; }
     public List<Tag> getTags() { return tags; }
     public List<Comment> getComments() { return comments; }
@@ -66,8 +99,15 @@ public class Post {
     public void setContent(String content) { this.content = content; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setSlug(String slug) { this.slug = slug; }
+    public void setExcerpt(String excerpt) { this.excerpt = excerpt; }
+    public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
+    public void setStatus(PostStatus status) { this.status = status; }
+    public void setViewCount(int viewCount) { this.viewCount = viewCount; }
+    public void setLikeCount(int likeCount) { this.likeCount = likeCount; }
+    public void setFeatured(boolean featured) { this.featured = featured; }
+    public void setAuthor(User author) { this.author = author; }
     public void setCategory(Category category) { this.category = category; }
     public void setTags(List<Tag> tags) { this.tags = tags; }
     public void setComments(List<Comment> comments) { this.comments = comments; }
-    
 }
